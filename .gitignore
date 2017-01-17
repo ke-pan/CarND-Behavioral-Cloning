@@ -1,2 +1,4 @@
 IMG/
 driving_log.csv
+model.json
+model.h5
