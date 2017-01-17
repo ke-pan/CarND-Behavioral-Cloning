@@ -48,3 +48,9 @@ model.compile(loss='mean_squared_error',
 history = model.fit(train_images, train_angles,
                     batch_size=128, nb_epoch=5,
                     verbose=1, validation_data=(val_images, val_angles))
+
+# save model and weights
+with open('model.json', 'w') as f:
+    f.write(model.to_json())
+
+model.save_weights('model.h5')
