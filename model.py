@@ -12,13 +12,13 @@ with open("driving_log.csv") as f:
     log_csv = csv.reader(f)
     for row in log_csv:
         img = cv2.imread(row[0])
-        images.append(img)
+        images.append(cv2.resize(img[::-1], (160, 80))
         angles.append(row[3])
 
 # normalize
-# images = np.array(images).astype('float32')
-# images = images / 255 - 0.5
-images = np.array(images)
+images = np.array(images).astype('float32')
+images = images / 255 - 0.5
+# images = np.array(images)
 
 
 # size of image
@@ -32,8 +32,8 @@ model.add(Convolution2D(64, 5, 5, border_mode='same', activation='relu'))
 model.add(MaxPooling2D(pool_size=(2, 2), border_mode='same'))
 model.add(Flatten())
 model.add(Dropout(0.4))
-model.add(Dense(256))
-model.add(Dense(16))
+model.add(Dense(256, activation='relu'))
+model.add(Dense(16, activation='relu'))
 model.add(Dense(1))
 
 model.summary()
