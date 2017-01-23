@@ -1,4 +1,5 @@
 IMG/
+__MACOSX/
 driving_log.csv
 model.json
 model.h5
