@@ -54,33 +54,6 @@ def crop(image):
 def resize(image):
     return cv2.resize(image,(WIDTH,HEIGHT),interpolation=cv2.INTER_AREA)
 
-def val_generator(batch_size, data):
-    images = np.zeros((batch_size, WIDTH, HEIGHT, CHANNEL))
-    steerings = np.zeros(batch_size)
-    while True:
-        samples = sample(data, batch_size)
-        for i in range(batch_size):
-            x = samples[i]
-            # print(x)
-            steering = float(x[3])
-            filename, steering = pick_image_filename(x, steering)
-            # print(filename, steering)
-            image = load_img(filename)
-            # print(image)
-            image, steering = trans_image(image, steering)
-            # print(image, steering)
-            image, steering = flip_image(image, steering)
-            # print(image, steering)
-            image = argument_brightness(image)
-            # print(image)
-            image = crop(image)
-            # print(image)
-            image = resize(image)
-            # print(image)
-            images[i] = image
-            steerings[i] = steering
-        yield images, steerings
-
 def generator(batch_size, data):
     images = np.zeros((batch_size, WIDTH, HEIGHT, CHANNEL))
     steerings = np.zeros(batch_size)
@@ -144,6 +117,5 @@ with open("driving_log.csv") as f:
 print("length of log is:", len(log_records))
 model = build_model()
 model.compile(loss='mse', optimizer='adam')
-history = model.fit_generator(generator(1000, log_records), 1000, nb_epoch=100, verbose=1)
-#                              validation_data=val_generator(1000, log_records), nb_val_samples=1000)
+history = model.fit_generator(generator(5000, log_records), 5000, nb_epoch=100, verbose=1)
 save_model(model)
