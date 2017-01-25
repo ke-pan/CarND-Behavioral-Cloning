@@ -12,8 +12,12 @@ HEIGHT = 64
 CHANNEL = 3
 
 def load_img(filename):
+    # print(filename)
     img = cv2.imread(filename)
-    return cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+    # print(img)
+    img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+    # print(img)
+    return img
 
 def pick_image_filename(x, steering):
     i = randint(0, 2)
@@ -23,14 +27,14 @@ def pick_image_filename(x, steering):
         steering1 = steering - 0.25
     else:
         steering1 = steering
-    return x[i], steering1
+    return x[i].strip(), steering1
 
 def trans_image(image, steering):
     rows, cols, _ = image.shape
     trans_x = randint(-50, 51)
     trans_steering = trans_x * 0.004
     trans_y = randint(-10, 11)
-    trans_M = np.array([[1, 0, trans_x], [0, 1, trans_y]])
+    trans_M = np.float32([[1, 0, trans_x], [0, 1, trans_y]])
     trans_image = cv2.warpAffine(image, trans_M, (cols, rows))
     return trans_image, trans_steering
 
@@ -42,12 +46,40 @@ def flip_image(image, steering):
 def argument_brightness(image):
     hsv = cv2.cvtColor(image, cv2.COLOR_RGB2HSV)
     hsv[:,:,2] = hsv[:,:,2] * uniform(0.3, 1.3)
+    return cv2.cvtColor(hsv, cv2.COLOR_HSV2RGB)
 
 def crop(image):
-    return image[30:140,:,:]
+    return image[30:140, :]
 
 def resize(image):
     return cv2.resize(image,(WIDTH,HEIGHT),interpolation=cv2.INTER_AREA)
+
+def val_generator(batch_size, data):
+    images = np.zeros((batch_size, WIDTH, HEIGHT, CHANNEL))
+    steerings = np.zeros(batch_size)
+    while True:
+        samples = sample(data, batch_size)
+        for i in range(batch_size):
+            x = samples[i]
+            # print(x)
+            steering = float(x[3])
+            filename, steering = pick_image_filename(x, steering)
+            # print(filename, steering)
+            image = load_img(filename)
+            # print(image)
+            image, steering = trans_image(image, steering)
+            # print(image, steering)
+            image, steering = flip_image(image, steering)
+            # print(image, steering)
+            image = argument_brightness(image)
+            # print(image)
+            image = crop(image)
+            # print(image)
+            image = resize(image)
+            # print(image)
+            images[i] = image
+            steerings[i] = steering
+        yield images, steerings
 
 def generator(batch_size, data):
     images = np.zeros((batch_size, WIDTH, HEIGHT, CHANNEL))
@@ -56,14 +88,22 @@ def generator(batch_size, data):
         samples = sample(data, batch_size)
         for i in range(batch_size):
             x = samples[i]
-            steering = x[3]
+            # print(x)
+            steering = float(x[3])
             filename, steering = pick_image_filename(x, steering)
+            # print(filename, steering)
             image = load_img(filename)
+            # print(image)
             image, steering = trans_image(image, steering)
+            # print(image, steering)
             image, steering = flip_image(image, steering)
+            # print(image, steering)
             image = argument_brightness(image)
+            # print(image)
             image = crop(image)
+            # print(image)
             image = resize(image)
+            # print(image)
             images[i] = image
             steerings[i] = steering
         yield images, steerings
@@ -98,12 +138,12 @@ def save_model(model):
 log_records = []
 
 with open("driving_log.csv") as f:
-    reader = csv.DictReader(f)
+    reader = csv.reader(f)
     for row in reader:
         log_records.append(row)
 print("length of log is:", len(log_records))
 model = build_model()
 model.compile(loss='mse', optimizer='adam')
-history = model.fit_generator(generator(1000, log_records), 1000, nb_epoch=30, verbose=1,
-                              validation_data=generator(1000, log_records), nb_val_samples=1000)
-save_model()
+history = model.fit_generator(generator(1000, log_records), 1000, nb_epoch=100, verbose=1)
+#                              validation_data=val_generator(1000, log_records), nb_val_samples=1000)
+save_model(model)
