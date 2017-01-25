@@ -32,7 +32,7 @@ def pick_image_filename(x, steering):
 def trans_image(image, steering):
     rows, cols, _ = image.shape
     trans_x = randint(-50, 51)
-    trans_steering = trans_x * 0.004
+    trans_steering = steering + trans_x * 0.004
     trans_y = randint(-10, 11)
     trans_M = np.float32([[1, 0, trans_x], [0, 1, trans_y]])
     trans_image = cv2.warpAffine(image, trans_M, (cols, rows))

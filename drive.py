@@ -1,7 +1,7 @@
 import argparse
 import base64
 import json
-
+import cv2
 import numpy as np
 import socketio
 import eventlet
@@ -38,6 +38,7 @@ def telemetry(sid, data):
     image = Image.open(BytesIO(base64.b64decode(imgString)))
     # image = image.resize((160,80))
     image_array = np.asarray(image)
+    image_array = cv2.resize(image_array[30:140, :],(64,64),interpolation=cv2.INTER_AREA)
     transformed_image_array = image_array[None, :, :, :]
     # transformed_image_array = transformed_image_array.astype('float32')
     # transformed_image_array = transformed_image_array / 127.5 - 1.
