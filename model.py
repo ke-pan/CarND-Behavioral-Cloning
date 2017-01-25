@@ -105,5 +105,5 @@ print("length of log is:", len(log_records))
 model = build_model()
 model.compile(loss='mse', optimizer='adam')
 history = model.fit_generator(generator, 10000, nb_epoch=3, verbose=1,
-                              alidation_data=generator, nb_val_samples=1000)
+                              validation_data=generator, nb_val_samples=1000)
 save_model()
