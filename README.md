@@ -39,6 +39,8 @@ layer 6: 1 output fully connected layer. This is output of steering.
 
 Mean Square Error is used as loss function. 100 epochs with 5000 data generated per epoch.
 
+Because through data augmentation ways mentioned above, the training data is actually infinite. I don't use validate dataset.
+
 ## What I learn from this project
 
 The most import thing I learn from this project is the data augmentation. Before I augment the images, I just passed first corner of track 1.
