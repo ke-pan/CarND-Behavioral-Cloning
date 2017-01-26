@@ -115,5 +115,6 @@ with open("driving_log.csv") as f:
 print("length of log is:", len(log_records))
 model = build_model()
 model.compile(loss='mse', optimizer='adam')
-history = model.fit_generator(generator(5000, log_records), 5000, nb_epoch=100, verbose=1)
+history = model.fit_generator(generator(5000, log_records), 5000, nb_epoch=100, verbose=1,
+                              validation_data=generator(1000, log_records), nb_val_samples=1000)
 save_model(model)
