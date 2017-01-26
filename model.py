@@ -1,11 +1,9 @@
 import csv
 import cv2
-from PIL import Image
 from keras.models import Sequential
-from keras.layers import Dense, Dropout, Convolution2D, MaxPooling2D, Flatten, ELU, Lambda
+from keras.layers import Dense, Dropout, Convolution2D, Flatten, ELU, Lambda
 import numpy as np
 from random import sample, randint, uniform
-# from sklearn.model_selection import train_test_split
 
 WIDTH = 64
 HEIGHT = 64

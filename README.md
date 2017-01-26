@@ -13,9 +13,35 @@ Inspired by [Mohan Karthik](https://medium.com/@mohankarthik/cloning-a-car-to-mi
 3. Mirroring the original images.
 4. Modifying brightness of original images.
 
+following is the examples of image augment
+
+original - steering: 0
+
+![original](images/center_2016_12_01_13_39_24_386.jpg)
+
+after transform - steering: -0.032
+
+![after transform](images/after_trans.jpg)
+
+after flip - steering: 0.032
+
+![after flip](images/after_flip.jpg)
+
+after brightness augmentation - steering: 0.032
+
+![after brightness augmentation](images/after_brightness.jpg)
+
 ## Crop and Resize
 
 I crop the original images to remove useless part. Then I resize images to 64x64.
+
+after crop
+
+![after crop](images/after_crop.jpg)
+
+after resize
+
+![after resize](images/after_resize.jpg)
 
 ## Architecture
 
