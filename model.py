@@ -83,7 +83,7 @@ def generator(batch_size, data):
 def val_generate(data):
     size = len(data)
     images = np.zeros((size, WIDTH, HEIGHT, CHANNEL))
-    steerings = np.zeros(batch_size)
+    steerings = np.zeros(size)
     for i in range(size):
         x = data[i]
         steering = float(x[3])
@@ -132,6 +132,6 @@ print("length of log is:", len(log_records))
 training_set, validation_set = train_test_split(log_records, test_size=0.1, random_state=42)
 model = build_model()
 model.compile(loss='mse', optimizer='adam')
-history = model.fit_generator(generator(5000, training_set), 5000, nb_epoch=100, verbose=1,
+history = model.fit_generator(generator(128, training_set), 10000, nb_epoch=30, verbose=1,
                               validation_data=val_generate(validation_set), nb_val_samples=1000)
 save_model(model)
