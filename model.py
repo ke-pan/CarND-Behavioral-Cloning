@@ -4,6 +4,7 @@ from keras.models import Sequential
 from keras.layers import Dense, Dropout, Convolution2D, Flatten, ELU, Lambda
 import numpy as np
 from random import sample, randint, uniform
+from sklearn.model_selection import train_test_split
 
 WIDTH = 64
 HEIGHT = 64
@@ -79,6 +80,21 @@ def generator(batch_size, data):
             steerings[i] = steering
         yield images, steerings
 
+def val_generate(data):
+    size = len(data)
+    images = np.zeros((size, WIDTH, HEIGHT, CHANNEL))
+    steerings = np.zeros(batch_size)
+    for i in range(size):
+        x = data[i]
+        steering = float(x[3])
+        filename = x[0].strip()
+        image = load_img(filename)
+        image = crop(image)
+        image = resize(image)
+        images[i] = image
+        steerings[i] = steering
+    return images, steerings
+
 def build_model():
     row, col, ch = HEIGHT, WIDTH, CHANNEL
     model = Sequential()
@@ -113,8 +129,9 @@ with open("driving_log.csv") as f:
     for row in reader:
         log_records.append(row)
 print("length of log is:", len(log_records))
+training_set, validation_set = train_test_split(log_records, test_size=0.1, random_state=42)
 model = build_model()
 model.compile(loss='mse', optimizer='adam')
-history = model.fit_generator(generator(5000, log_records), 5000, nb_epoch=100, verbose=1,
-                              validation_data=generator(1000, log_records), nb_val_samples=1000)
+history = model.fit_generator(generator(5000, training_set), 5000, nb_epoch=100, verbose=1,
+                              validation_data=val_generate(validation_set), nb_val_samples=1000)
 save_model(model)
